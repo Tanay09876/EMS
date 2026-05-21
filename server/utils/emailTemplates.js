@@ -173,87 +173,40 @@ export const resetOtpEmail = ({ otp }) =>
 // ===============================
 // LEAVE DECISION EMAIL
 // ===============================
-export const leaveDecisionEmail = ({
-    name,
-    status,
-    type,
-    startDate,
-    endDate,
-    totalDays,
-    reason,
-    adminRemark,
-}) =>
-    emailLayout(
-        `Leave ${
-            status === "APPROVED"
-                ? "Approved "
-                : "Rejected "
-        }`,
+// REMOVE the old leaveDecisionEmail entirely and REPLACE with this one
 
+export const leaveDecisionEmail = ({
+    name, status, type, startDate, endDate, totalDays, reason, adminRemark, halfDayPeriod,
+}) => {
+    const leaveTypeLabel = type === "HALF_DAY"
+        ? `Half Day (${halfDayPeriod === "FIRST" ? "Morning" : "Afternoon"})`
+        : type.charAt(0) + type.slice(1).toLowerCase() + " Leave";
+
+    const durationBlock = type === "HALF_DAY"
+        ? `<p><strong>Date:</strong><br/>${formatDate(startDate)}</p>
+           <p><strong>Total Days:</strong><br/>0.5</p>`
+        : `<p><strong>Duration:</strong><br/>${formatDate(startDate)} → ${formatDate(endDate)}</p>
+           <p><strong>Total Days:</strong><br/>${totalDays}</p>`;
+
+    return emailLayout(
+        `Leave ${status === "APPROVED" ? "Approved " : "Rejected "}`,
         `
         <p>Hello <strong>${name}</strong>,</p>
-
-        <p>
-            Your leave request has been
-            <strong style="
-                color:${
-                    status === "APPROVED"
-                        ? "#16a34a"
-                        : "#dc2626"
-                };
-            ">
+        <p>Your leave request has been
+            <strong style="color:${status === "APPROVED" ? "#16a34a" : "#dc2626"};">
                 ${status.toLowerCase()}
             </strong>.
         </p>
-
-        <div style="background:#f8fafc;border:1px solid #e2e8f0; border-radius:12px;padding:20px;margin:24px 0;">
-            <p>
-                <strong>Leave Type:</strong><br/>
-                ${type}
-            </p>
-
-            <p>
-                <strong>Duration:</strong><br/>
-                ${formatDate(startDate)}
-                →
-                ${formatDate(endDate)}
-            </p>
-
-            <p>
-                <strong>Total Days:</strong><br/>
-                ${totalDays}
-            </p>
-
-            <p>
-                <strong>Your Reason:</strong><br/>
-                ${reason}
-            </p>
-
-            ${
-                adminRemark
-                    ? `
-                <p>
-                    <strong>Admin Remark:</strong><br/>
-                    ${adminRemark}
-                </p>
-            `
-                    : ""
-            }
-
+        <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:20px;margin:24px 0;">
+            <p><strong>Leave Type:</strong><br/>${leaveTypeLabel}</p>
+            ${durationBlock}
+            <p><strong>Your Reason:</strong><br/>${reason}</p>
+            ${adminRemark ? `<p><strong>Admin Remark:</strong><br/>${adminRemark}</p>` : ""}
         </div>
-
-        ${
-            status === "APPROVED"
-                ? `
-            <p style="color:#16a34a;">
-                Please ensure proper handover of your work before leave.
-            </p>
-        `
-                : `
-            <p style="color:#dc2626;">
-                Please contact your administrator for further clarification.
-            </p>
-        `
+        ${status === "APPROVED"
+            ? `<p style="color:#16a34a;">Please ensure proper handover of your work before leave.</p>`
+            : `<p style="color:#dc2626;">Please contact your administrator for further clarification.</p>`
         }
         `
     );
+};
