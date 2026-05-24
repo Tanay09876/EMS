@@ -17,7 +17,7 @@ const ApplyLeaveModal = ({ open, onClose, onSuccess }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (leaveType === 'HALF-DAY' && !halfDayPeriod) {
+        if (leaveType === 'HALF_DAY' && !halfDayPeriod) {
             toast.error('Please select First Half or Second Half');
             return;
         }
@@ -26,7 +26,7 @@ const ApplyLeaveModal = ({ open, onClose, onSuccess }) => {
         const formData = new FormData(e.currentTarget);
         const data = Object.fromEntries(formData.entries());
 
-        if (leaveType === 'HALF-DAY') {
+        if (leaveType === 'HALF_DAY') {
             data.halfDayPeriod = halfDayPeriod;
             data.endDate = data.startDate;
         }
@@ -95,12 +95,12 @@ const ApplyLeaveModal = ({ open, onClose, onSuccess }) => {
                             <option value="SICK">Sick Leave</option>
                             <option value="CASUAL">Casual Leave</option>
                             <option value="ANNUAL">Annual Leave</option>
-                            <option value="HALF-DAY">Half Day</option>
+                            <option value="HALF_DAY">Half Day</option>
                         </select>
                     </div>
 
                     {/* Half Day Period Selector */}
-                    {leaveType === 'HALF-DAY' && (
+                    {leaveType === 'HALF_DAY' && (
                         <div>
                             <label className='flex items-center gap-2 text-sm font-medium text-slate-700 mb-2'>
                                 <Clock className="w-4 h-4 text-slate-400" />
@@ -137,7 +137,7 @@ const ApplyLeaveModal = ({ open, onClose, onSuccess }) => {
                     )}
 
                     {/* Duration */}
-                    {leaveType === 'HALF-DAY' ? (
+                    {leaveType === 'HALF_DAY' ? (
                         <div>
                             <label className='flex items-center gap-2 text-sm font-medium text-slate-700 mb-2'>
                                 <CalendarDays className="w-4 h-4 text-slate-400" />
