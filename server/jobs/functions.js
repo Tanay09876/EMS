@@ -1,5 +1,3 @@
-// inngest/functions.js  →  jobs/functions.js
-
 import cron from "node-cron";
 import Attendance from "../models/Attendance.js";
 import Employee from "../models/Employee.js";
@@ -195,3 +193,87 @@ export const startAttendanceCron = () => {
     { timezone: "Asia/Kolkata" },
   );
 };
+// export const startAttendanceCron = () => {
+//   cron.schedule(
+//     "* * * * *", 
+//     async () => {
+//       try {
+//         const startUTC = new Date(
+//           new Date().toLocaleDateString("en-CA", {
+//             timeZone: "Asia/Kolkata",
+//           }) + "T00:00:00+05:30",
+//         );
+
+//         const endUTC = new Date(
+//           startUTC.getTime() + 24 * 60 * 60 * 1000,
+//         );
+//         const activeEmployees = await Employee.find({
+//           isDeleted: false,
+//           employmentStatus: "ACTIVE",
+//         }).lean();
+
+//         // Employees on approved leave today
+//         const leaves = await LeaveApplication.find({
+//           status: "APPROVED",
+//           startDate: { $lte: endUTC },
+//           endDate: { $gte: startUTC },
+//         }).lean();
+
+//         const onLeaveIds = leaves.map((l) =>
+//           l.employeeId.toString(),
+//         );
+
+     
+
+//         // Employees already checked in
+//         const attendances = await Attendance.find({
+//           date: { $gte: startUTC, $lt: endUTC },
+//         }).lean();
+
+//         const checkedInIds = attendances.map((a) =>
+//           a.employeeId.toString(),
+//         );
+
+   
+
+//         // Absent employees
+//         const absentEmployees = activeEmployees.filter(
+//           (emp) =>
+//             !onLeaveIds.includes(emp._id.toString()) &&
+//             !checkedInIds.includes(emp._id.toString()),
+//         );
+
+   
+
+//         // Send emails
+//         await Promise.all(
+//           absentEmployees.map((emp) =>
+//             sendEmail({
+//               to: emp.email,
+//               subject:
+//                 "Attendance Reminder — Please Mark Your Attendance",
+//             body: `<div style="max-width: 600px; font-family: Arial, sans-serif;">
+//                                 <h2>Hi ${emp.firstName}, 👋</h2>
+//                                 <p style="font-size: 16px;">We noticed you haven't marked your attendance yet today.</p>
+//                                 <p style="font-size: 16px;">The deadline was <strong>11:30 AM</strong> and your attendance is still missing.</p>
+//                                 <p style="font-size: 16px;">Please check in as soon as possible or contact your admin if you're facing any issues.</p>
+//                                 <br />
+//                                 <p style="font-size: 14px; color: #666;">Department: ${emp.department}</p>
+//                                 <br />
+//                                 <p style="font-size: 16px;">Best Regards,</p>
+//                                 <p style="font-size: 16px;"><strong>QuickEMS</strong></p>
+//                             </div>`,
+              
+//             }),
+//           ),
+//         );
+
+//       } catch (err) {
+//         console.error("Attendance cron error:", err);
+//       }
+//     },
+//     {
+//       timezone: "Asia/Kolkata",
+//     },
+//   );
+// };
