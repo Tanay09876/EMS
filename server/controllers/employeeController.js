@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import User from "../models/User.js";
 import sendEmail from "../config/nodemailer.js";
 import { accountCreatedEmail } from "../utils/emailTemplates.js";
+import ProductivityTask from "../models/ProductivityTask.js";
 
 // Get employees (active, non-deleted only)
 // GET /api/employees
@@ -164,8 +165,10 @@ export const deleteEmployee = async (req, res) => {
     employee.employmentStatus = "INACTIVE";
     await employee.save();
 
-    // ✅ Deactivate the linked User so they cannot login
-    await User.findByIdAndUpdate(employee.userId, { isActive: false });
+    await Promise.all([
+      User.findByIdAndUpdate(employee.userId, { isActive: false }),
+      ProductivityTask.deleteMany({ employeeId: employee._id }),
+    ]);
 
     return res.json({ success: true });
   } catch (error) {

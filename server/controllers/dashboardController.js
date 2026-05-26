@@ -3,6 +3,7 @@ import Attendance from "../models/Attendance.js";
 import Employee from "../models/Employee.js";
 import LeaveApplication from "../models/LeaveApplication.js";
 import Payslip from "../models/Payslip.js";
+import { getLeaveBalance } from "../utils/leaveBalance.js";
 
 // Get dashboard for employee and admin
 // GET /api/dashboard
@@ -36,7 +37,7 @@ export const getDashboard  = async (req, res) => {
             if (!employee) return res.status(404).json({ error: "Employee not found" });
 
             const today = new Date();
-            const [currentMonthAttendance, pendingLeaves, latestPayslip] = await Promise.all([
+            const [currentMonthAttendance, pendingLeaves, latestPayslip, leaveBalance] = await Promise.all([
                 Attendance.countDocuments({
                     employeeId: employee._id,
                     date: {
@@ -50,6 +51,7 @@ export const getDashboard  = async (req, res) => {
                     status: "PENDING",
                 }),
                 Payslip.findOne({ employeeId: employee._id }).sort({ createdAt: -1 }).lean(),
+                getLeaveBalance(employee._id, today.getFullYear()),
             ])
 
             return res.json({
@@ -57,7 +59,8 @@ export const getDashboard  = async (req, res) => {
                 employee: {...employee, id: employee._id.toString()},
                 currentMonthAttendance,
                 pendingLeaves,
-                latestPayslip: latestPayslip ? {...latestPayslip, id: latestPayslip._id.toString()} : null
+                latestPayslip: latestPayslip ? {...latestPayslip, id: latestPayslip._id.toString()} : null,
+                leaveBalance
             })
         }
     } catch (error) {

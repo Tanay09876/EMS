@@ -1,10 +1,10 @@
 import  { useEffect, useState } from 'react'
 import {Link, useLocation} from 'react-router-dom'
-import {CalendarIcon, ChevronRightIcon, DollarSignIcon, FileTextIcon, LayoutGridIcon, Loader2, LogOutIcon, MenuIcon, SettingsIcon, UserIcon, XIcon} from 'lucide-react'
+import {BarChart3Icon, CalendarIcon, ChevronRightIcon, DollarSignIcon, FileTextIcon, LayoutGridIcon, Loader2, LogOutIcon, MenuIcon, MessageSquareWarningIcon, MoonIcon, SettingsIcon, SunIcon, UserIcon, UsersRoundIcon, XIcon} from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import api from '../api/axios'
 
-const Sidebar = () => {
+const Sidebar = ({ theme, onToggleTheme }) => {
     const { pathname } = useLocation()
     const [userName, setUserName] = useState('')
     const [profileImage, setProfileImage] = useState('')
@@ -42,10 +42,13 @@ const Sidebar = () => {
         role === "ADMIN" ? 
         {name: "Employees", href: "/employees", icon: UserIcon} :
         {name: "Attendance", href: "/attendance", icon: CalendarIcon},
+        {name: "Productivity", href: "/productivity", icon: BarChart3Icon},
+        role === "ADMIN" && {name: "Team Productivity", href: "/productivity/all", icon: UsersRoundIcon},
+        {name: "Messages", href: "/messages", icon: MessageSquareWarningIcon},
         {name: "Leave", href: "/leave", icon: FileTextIcon},
         {name: "Payslips", href: "/payslips", icon: DollarSignIcon},
         {name: "Settings", href: "/settings", icon: SettingsIcon},
-    ]
+    ].filter(Boolean)
 
     const handleLogout = ()=>{
         logout()
@@ -106,7 +109,9 @@ const Sidebar = () => {
                     </div>
                 ) : (
                     navItems.map((item)=>{
-                    const isActive = pathname.startsWith(item.href)
+                    const isActive = item.href === "/productivity"
+                        ? pathname === item.href
+                        : pathname === item.href || pathname.startsWith(`${item.href}/`)
                     return (
                         <Link key={item.name} to={item.href} className={`group flex items-center gap-3 px-3 py-2.5 rounded-md text-[13px] font-medium transition-all duration-150 relative ${isActive ? "bg-indigo-500/12 text-indigo-300" : "text-slate-300 hover:text-white hover:bg-white/4"}`}>
 
@@ -122,7 +127,11 @@ const Sidebar = () => {
             </div>
 
             {/* Logout */}
-            <div className="p-3 border-t border-white/6">
+            <div className="p-3 border-t border-white/6 space-y-2">
+                <button onClick={onToggleTheme} className='flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-[13px] font-medium text-slate-400 hover:text-white hover:bg-white/4 transition-all duration-150'>
+                    {theme === "dark" ? <SunIcon className="w-4.25 h-4.25"/> : <MoonIcon className="w-4.25 h-4.25"/>}
+                    <span>{theme === "dark" ? "Light mode" : "Dark mode"}</span>
+                </button>
                 <button onClick={handleLogout} className='flex items-center gap-3 w-full px-3 py-2.5 rounded-md text-[13px] font-medium text-slate-400 hover:text-rose-400 hover:bg-rose-500/8 transition-all duration-150'>
                     <LogOutIcon className="w-4.25 h-4.25"/>
                     <span>Log out</span>

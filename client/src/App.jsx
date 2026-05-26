@@ -11,6 +11,9 @@ import Settings from "./pages/Settings"
 import PrintPayslip from "./pages/PrintPayslip"
 import LoginForm from "./components/LoginForm"
 import ForgotPassword from "./pages/ForgotPassword"
+import Productivity from "./pages/Productivity"
+import AdminProductivity from "./pages/AdminProductivity"
+import Messages from "./pages/Messages"
 
 const App = () => {
   return (
@@ -28,6 +31,9 @@ const App = () => {
           <Route path="/dashboard" element={<Dashboard />}/>
           <Route path="/employees" element={<Employees />}/>
           <Route path="/attendance" element={<Attendance />}/>
+          <Route path="/productivity" element={<Productivity />}/>
+          <Route path="/productivity/all" element={<AdminProductivity />}/>
+          <Route path="/messages" element={<Messages />}/>
           <Route path="/leave" element={<Leave />}/>
           <Route path="/payslips" element={<Payslips />}/>
           <Route path="/settings" element={<Settings />}/>

@@ -12,6 +12,8 @@ import attendanceRouter from "./routes/attendanceRoutes.js";
 import leaveRouter from "./routes/leaveRoutes.js";
 import payslipRouter from "./routes/payslipsRoutes.js";
 import dashboardRouter from "./routes/dashboardRoutes.js";
+import productivityRouter from "./routes/productivityRoutes.js";
+import messageRouter from "./routes/messageRoutes.js";
 import { startAttendanceCron } from "./jobs/functions.js";
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -42,6 +44,8 @@ app.use("/api/attendance", attendanceRouter);
 app.use("/api/leave", leaveRouter);
 app.use("/api/payslips", payslipRouter);
 app.use("/api/dashboard", dashboardRouter);
+app.use("/api/productivity", productivityRouter);
+app.use("/api/messages", messageRouter);
 
 
 
