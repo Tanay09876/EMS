@@ -1,10 +1,5 @@
 import LeaveApplication from "../models/LeaveApplication.js";
-
-export const LEAVE_ALLOWANCE = {
-  SICK: 12,
-  CASUAL: 12,
-  ANNUAL: 18,
-};
+import { getOrganizationSettings } from "./organizationSettings.js";
 
 const startOfDay = (value = new Date()) => {
   const date = new Date(value);
@@ -22,6 +17,12 @@ const getLeaveDays = (leave) => {
 };
 
 export const getLeaveBalance = async (employeeId, year = new Date().getFullYear()) => {
+  const settings = await getOrganizationSettings();
+  const leaveAllowance = {
+    SICK: settings.sickLeaveAllowance,
+    CASUAL: settings.casualLeaveAllowance,
+    ANNUAL: settings.annualLeaveAllowance,
+  };
   const yearStart = new Date(year, 0, 1);
   const yearEnd = new Date(year, 11, 31, 23, 59, 59, 999);
 
@@ -40,7 +41,7 @@ export const getLeaveBalance = async (employeeId, year = new Date().getFullYear(
     { SICK: 0, CASUAL: 0, ANNUAL: 0 },
   );
 
-  return Object.entries(LEAVE_ALLOWANCE).map(([type, allowance]) => ({
+  return Object.entries(leaveAllowance).map(([type, allowance]) => ({
     type,
     allowance,
     used: usedByType[type],

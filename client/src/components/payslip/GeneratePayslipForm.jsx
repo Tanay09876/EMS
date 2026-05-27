@@ -82,7 +82,7 @@ const GeneratePayslipForm = ({ employees, onSuccess }) => {
         <div className='fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4'>
             <div className='card max-w-lg w-full p-6 animate-slide-up'>
                 <div className='flex justify-between items-center mb-6'>
-                    <h3 className='text-lg font-bold text-slate-900'>Generate Monthly Payslip</h3>
+                    <h3 className='text-lg font-bold text-slate-900 dark:text-white'>Generate Monthly Payslip</h3>
                     <button onClick={handleClose} className='text-slate-400 hover:text-slate-600 p-1'>
                         <X size={20} />
                     </button>
@@ -92,7 +92,7 @@ const GeneratePayslipForm = ({ employees, onSuccess }) => {
 
                     {/* Select Employee */}
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                             Employee <span className="text-red-500">*</span>
                         </label>
                         <select name="employeeId" required>
@@ -107,7 +107,7 @@ const GeneratePayslipForm = ({ employees, onSuccess }) => {
                     {/* Month & Year */}
                     <div className='grid grid-cols-2 gap-4'>
                         <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                 Month <span className="text-red-500">*</span>
                             </label>
                             <select name="month">
@@ -117,7 +117,7 @@ const GeneratePayslipForm = ({ employees, onSuccess }) => {
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                 Year <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -132,13 +132,13 @@ const GeneratePayslipForm = ({ employees, onSuccess }) => {
 
                     {/* Basic Salary — required */}
                     <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                             Basic Salary <span className="text-red-500">*</span>
                         </label>
                         <input
                             type="number"
                             name="basicSalary"
-                            placeholder="e.g. 5000"
+                            placeholder="e.g. 50000"
                             min="0.01"
                             step="0.01"
                             onKeyDown={blockInvalidChars}
@@ -153,7 +153,7 @@ const GeneratePayslipForm = ({ employees, onSuccess }) => {
                     {/* Allowances & Deductions — optional */}
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                 Allowances
                                 <span className="ml-1 text-xs text-slate-400 font-normal">(optional)</span>
                             </label>
@@ -173,7 +173,7 @@ const GeneratePayslipForm = ({ employees, onSuccess }) => {
                             )}
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                                 Deductions
                                 <span className="ml-1 text-xs text-slate-400 font-normal">(optional)</span>
                             </label>

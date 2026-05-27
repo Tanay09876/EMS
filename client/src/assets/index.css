@@ -126,3 +126,6 @@
 ::selection {
     @apply bg-indigo-100 text-indigo-900;
 }
+.react-datepicker-popper {
+  z-index: 9999 !important;
+}

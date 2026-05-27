@@ -1,5 +1,7 @@
 import Employee from "../models/Employee.js";
 import Payslip from "../models/Payslip.js";
+import { getLeaveBalance } from "../utils/leaveBalance.js";
+import { getOrganizationSettings } from "../utils/organizationSettings.js";
 
 // Create payslip
 // POST /api/payslips
@@ -11,7 +13,23 @@ export const createPayslip = async (req, res) => {
             return res.status(400).json({ error: "Missing fields" });
         }
 
-        const netSalary = Number(basicSalary) + Number(allowances || 0) - Number(deductions || 0);
+        const employee = await Employee.findOne({ _id: employeeId, isDeleted: { $ne: true } });
+        if (!employee) return res.status(404).json({ error: "Employee not found" });
+
+        const settings = await getOrganizationSettings();
+        const leaveBalance = await getLeaveBalance(employee._id, Number(year));
+        const annualBalance = leaveBalance.find((leave) => leave.type === "ANNUAL");
+        const annualLeaveRemaining = Number(annualBalance?.remaining || 0);
+        const annualLeavePayoutRate = Number(settings.annualLeavePayoutRate || 0);
+        const annualLeavePayoutAmount = settings.annualLeavePayoutEnabled
+            ? annualLeaveRemaining * annualLeavePayoutRate
+            : 0;
+
+        const netSalary =
+            Number(basicSalary) +
+            Number(allowances || 0) +
+            annualLeavePayoutAmount -
+            Number(deductions || 0);
 
         const payslip = await Payslip.create({
             employeeId,
@@ -20,6 +38,12 @@ export const createPayslip = async (req, res) => {
             basicSalary: Number(basicSalary),
             allowances: Number(allowances || 0),
             deductions: Number(deductions || 0),
+            annualLeavePayoutEnabled: Boolean(settings.annualLeavePayoutEnabled),
+            annualLeaveRemaining,
+            annualLeavePayoutRate,
+            annualLeavePayoutAmount,
+            currencyCode: settings.currencyCode || "INR",
+            currencySymbol: settings.currencySymbol || "Rs",
             netSalary,
         });
 
@@ -38,19 +62,41 @@ export const getPayslips = async (req, res) => {
         const isAdmin = session.role === "ADMIN";
 
         if (isAdmin) {
-            const payslips = await Payslip.find()
+            const { search, department, period } = req.query;
+            const periodParts = period ? String(period).split("-").map(Number) : [];
+            const [month, year] = periodParts[0] > 12 ? [periodParts[1], periodParts[0]] : periodParts;
+            const query = {};
+            if (year && month) {
+                query.year = year;
+                query.month = month;
+            }
+
+            const payslips = await Payslip.find(query)
                 .populate("employeeId")
                 .sort({ createdAt: -1 });
 
-            const data = payslips.map((p) => {
-                const obj = p.toObject();
-                return {
+            const term = search?.trim().toLowerCase();
+            const data = payslips
+                .map((p) => {
+                    const obj = p.toObject();
+                    return {
                     ...obj,
                     id: obj._id.toString(),
                     employee: obj.employeeId,
                     employeeId: obj.employeeId?._id?.toString(),
-                };
-            });
+                    };
+                })
+                .filter((p) => {
+                    const employee = p.employee || {};
+                    const matchesDepartment = !department || department === "ALL" || employee.department === department;
+                    const matchesSearch =
+                        !term ||
+                        `${employee.firstName || ""} ${employee.lastName || ""} ${employee.email || ""} ${employee.position || ""}`
+                            .toLowerCase()
+                            .includes(term);
+
+                    return matchesDepartment && matchesSearch;
+                });
 
             return res.json({ data });
         } else {

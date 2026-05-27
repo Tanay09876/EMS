@@ -1,10 +1,19 @@
-import { ArrowRightIcon, CalendarIcon, DollarSignIcon, FileTextIcon } from 'lucide-react';
+import { ArrowRightIcon, CalendarIcon, CircleDollarSignIcon, DollarSignIcon, EuroIcon, FileTextIcon, IndianRupeeIcon, JapaneseYenIcon, PoundSterlingIcon } from 'lucide-react';
 // import React from 'react'
 import { Link } from 'react-router-dom';
+import { formatMoney } from '../utils/currency';
 
 const EmployeeDashboard = ({data}) => {
     const emp = data.employee;
     const leaveLabels = { SICK: "Sick", CASUAL: "Casual", ANNUAL: "Annual" };
+    const currencyIconMap = {
+        INR: IndianRupeeIcon,
+        USD: DollarSignIcon,
+        EUR: EuroIcon,
+        GBP: PoundSterlingIcon,
+        JPY: JapaneseYenIcon,
+    };
+    const PayslipIcon = currencyIconMap[data.latestPayslip?.currencyCode] || CircleDollarSignIcon;
 
     const cards = [
         {
@@ -20,8 +29,8 @@ const EmployeeDashboard = ({data}) => {
             subtitle: "Awaiting approval",
         },
         {
-            icon: DollarSignIcon,
-            value: data.latestPayslip ? `$${data.latestPayslip.netSalary?.toLocaleString()}` : "N/A",
+            icon: PayslipIcon,
+            value: data.latestPayslip ? formatMoney(data.latestPayslip.netSalary, data.latestPayslip.currencyCode, data.latestPayslip.currencySymbol) : "N/A",
             title: "Latest Payslip",
             subtitle: "Most recent payout",
         },

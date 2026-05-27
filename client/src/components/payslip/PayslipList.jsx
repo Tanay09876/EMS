@@ -1,5 +1,6 @@
 import { format } from 'date-fns'
 import { Download } from 'lucide-react'
+import { formatMoney } from '../../utils/currency'
 // import React from 'react'
 
 const PayslipList = ({payslips, isAdmin}) => {
@@ -12,6 +13,7 @@ const PayslipList = ({payslips, isAdmin}) => {
                         {isAdmin && <th>Employee</th>}
                         <th>Period</th>
                         <th>Basic Salary</th>
+                        <th>Annual Leave Pay</th>
                         <th>Net Salary</th>
                         <th className='text-center'>Actions</th>
                     </tr>
@@ -19,7 +21,7 @@ const PayslipList = ({payslips, isAdmin}) => {
                 <tbody>
                     {payslips.length === 0 ? (
                         <tr>
-                            <td colSpan={isAdmin ? 5 : 4} className="text-center py-12 text-slate-400">
+                            <td colSpan={isAdmin ? 6 : 5} className="text-center py-12 text-slate-400">
                                 No payslips found
                             </td>
                         </tr>
@@ -28,22 +30,26 @@ const PayslipList = ({payslips, isAdmin}) => {
                             return (
                                 <tr key={payslip._id || payslip.id}>
                                     {isAdmin && (
-                                        <td className='text-slate-900'>
+                                        <td className='text-slate-900 dark:text-white'>
                                         {payslip.employee?.firstName} {payslip.employee?.lastName}
                             
                                     </td>
                                     )}
 
-                                    <td className='text-slate-500'>
+                                    <td className='text-slate-500 dark:text-slate-400'>
                                         {format(new Date(payslip.year, payslip.month - 1), "MMMM yyyy")}
                                     </td>
 
-                                    <td className='text-slate-500'>
-                                        ${payslip.basicSalary?.toLocaleString()}
+                                    <td className='text-slate-500 dark:text-slate-400'>
+                                        {formatMoney(payslip.basicSalary, payslip.currencyCode, payslip.currencySymbol)}
                                     </td>
 
-                                    <td className='font-medium text-slate-800'>
-                                        ${payslip.netSalary?.toLocaleString()}
+                                    <td className='text-slate-500 dark:text-slate-400'>
+                                        {formatMoney(payslip.annualLeavePayoutAmount, payslip.currencyCode, payslip.currencySymbol)}
+                                    </td>
+
+                                    <td className='font-medium text-slate-800 dark:text-white'>
+                                        {formatMoney(payslip.netSalary, payslip.currencyCode, payslip.currencySymbol)}
                                     </td>
 
                                     <td className='text-center'>

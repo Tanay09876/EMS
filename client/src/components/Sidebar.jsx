@@ -1,6 +1,6 @@
 import  { useEffect, useState } from 'react'
 import {Link, useLocation} from 'react-router-dom'
-import {BarChart3Icon, CalendarIcon, ChevronRightIcon, DollarSignIcon, FileTextIcon, LayoutGridIcon, Loader2, LogOutIcon, MenuIcon, MessageSquareWarningIcon, MoonIcon, SettingsIcon, SunIcon, UserIcon, UsersRoundIcon, XIcon} from 'lucide-react'
+import {BarChart3Icon, CalendarIcon, ChevronRightIcon, CircleDollarSignIcon, DollarSignIcon, EuroIcon, FileTextIcon, IndianRupeeIcon, JapaneseYenIcon, LayoutGridIcon, Loader2, LogOutIcon, MenuIcon, MessageSquareWarningIcon, MoonIcon, PoundSterlingIcon, SettingsIcon, SunIcon, UserIcon, UsersRoundIcon, XIcon} from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import api from '../api/axios'
 
@@ -9,6 +9,7 @@ const Sidebar = ({ theme, onToggleTheme }) => {
     const [userName, setUserName] = useState('')
     const [profileImage, setProfileImage] = useState('')
     const [mobileOpen, setMobileOpen] = useState(false)
+    const [currencyCode, setCurrencyCode] = useState('INR')
 
     const {user, loading, logout} = useAuth()
 
@@ -17,6 +18,9 @@ const Sidebar = ({ theme, onToggleTheme }) => {
             if(data.firstName) setUserName(`${data.firstName} ${data.lastName || ""}`.trim());
             if(data.profileImage) setProfileImage(data.profileImage);
         })
+        api.get("/settings").then(({data}) => {
+            if(data.currencyCode) setCurrencyCode(data.currencyCode)
+        }).catch(() => {})
     },[])
 
     useEffect(()=>{
@@ -36,6 +40,14 @@ const Sidebar = ({ theme, onToggleTheme }) => {
     },[pathname])
 
     const role = user?.role;
+    const currencyIconMap = {
+        INR: IndianRupeeIcon,
+        USD: DollarSignIcon,
+        EUR: EuroIcon,
+        GBP: PoundSterlingIcon,
+        JPY: JapaneseYenIcon,
+    }
+    const CurrencyIcon = currencyIconMap[currencyCode] || CircleDollarSignIcon
     const initials = userName.split(" ").filter(Boolean).slice(0, 2).map((name) => name[0]).join("").toUpperCase();
     const navItems = [
         {name: "Dashboard", href: "/dashboard", icon: LayoutGridIcon},
@@ -46,7 +58,7 @@ const Sidebar = ({ theme, onToggleTheme }) => {
         role === "ADMIN" && {name: "Team Productivity", href: "/productivity/all", icon: UsersRoundIcon},
         {name: "Messages", href: "/messages", icon: MessageSquareWarningIcon},
         {name: "Leave", href: "/leave", icon: FileTextIcon},
-        {name: "Payslips", href: "/payslips", icon: DollarSignIcon},
+        {name: "Payslips", href: "/payslips", icon: CurrencyIcon},
         {name: "Settings", href: "/settings", icon: SettingsIcon},
     ].filter(Boolean)
 

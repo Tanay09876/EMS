@@ -14,6 +14,7 @@ import payslipRouter from "./routes/payslipsRoutes.js";
 import dashboardRouter from "./routes/dashboardRoutes.js";
 import productivityRouter from "./routes/productivityRoutes.js";
 import messageRouter from "./routes/messageRoutes.js";
+import settingsRouter from "./routes/settingsRoutes.js";
 import { startAttendanceCron } from "./jobs/functions.js";
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -46,6 +47,7 @@ app.use("/api/payslips", payslipRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/productivity", productivityRouter);
 app.use("/api/messages", messageRouter);
+app.use("/api/settings", settingsRouter);
 
 
 

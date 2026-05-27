@@ -4,6 +4,7 @@ import {useParams} from 'react-router-dom'
 import Loading from '../components/Loading';
 import {format} from 'date-fns'
 import api from '../api/axios';
+import { formatMoney } from '../utils/currency';
 
 const PrintPayslip = () => {
   const {id} = useParams();
@@ -52,19 +53,30 @@ const PrintPayslip = () => {
         <tbody>
           <tr className="border-t border-slate-100">
             <td className='py-3 px-4 text-slate-700'>Basic Salary</td>
-            <td className='text-right py-3 px-4 text-slate-900 font-medium'>${payslip.basicSalary?.toLocaleString()}</td>
+            <td className='text-right py-3 px-4 text-slate-900 font-medium'>{formatMoney(payslip.basicSalary, payslip.currencyCode, payslip.currencySymbol)}</td>
           </tr>
           <tr className="border-t border-slate-100">
             <td className='py-3 px-4 text-slate-700'>Allowances</td>
-            <td className='text-right py-3 px-4 text-slate-900 font-medium'>+${payslip.allowances?.toLocaleString()}</td>
+            <td className='text-right py-3 px-4 text-slate-900 font-medium'>+{formatMoney(payslip.allowances, payslip.currencyCode, payslip.currencySymbol)}</td>
           </tr>
+          {payslip.annualLeavePayoutEnabled && (
+            <tr className="border-t border-slate-100">
+              <td className='py-3 px-4 text-slate-700'>
+                Annual Leave Payout
+                <span className="block text-xs text-slate-400">
+                  {payslip.annualLeaveRemaining || 0} unused leave x {formatMoney(payslip.annualLeavePayoutRate, payslip.currencyCode, payslip.currencySymbol)}
+                </span>
+              </td>
+              <td className='text-right py-3 px-4 text-slate-900 font-medium'>+{formatMoney(payslip.annualLeavePayoutAmount, payslip.currencyCode, payslip.currencySymbol)}</td>
+            </tr>
+          )}
           <tr className="border-t border-slate-100">
             <td className='py-3 px-4 text-slate-700'>Deductions</td>
-            <td className='text-right py-3 px-4 text-slate-900 font-medium'>-${payslip.deductions?.toLocaleString()}</td>
+            <td className='text-right py-3 px-4 text-slate-900 font-medium'>-{formatMoney(payslip.deductions, payslip.currencyCode, payslip.currencySymbol)}</td>
           </tr>
           <tr className="border-t-2 border-slate-200 bg-slate-50">
             <td className='py-4 px-4 font-bold text-slate-900'>Net Salary</td>
-            <td className='text-right py-4 px-4 font-bold text-slate-900 text-lg'>${payslip.netSalary?.toLocaleString()}</td>
+            <td className='text-right py-4 px-4 font-bold text-slate-900 text-lg'>{formatMoney(payslip.netSalary, payslip.currencyCode, payslip.currencySymbol)}</td>
           </tr>
         </tbody>
       </table>
