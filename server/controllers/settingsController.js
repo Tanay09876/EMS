@@ -46,7 +46,7 @@ export const updateSettings = async (req, res) => {
         $set: updates,
         $setOnInsert: { key: "default" },
       },
-      { new: true, upsert: true },
+      { returnDocument: "after", upsert: true },
     ).lean();
 
     return res.json({ success: true, data: settings });

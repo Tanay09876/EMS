@@ -127,6 +127,14 @@ export const updateEmployee = async (req, res) => {
     const employee = await Employee.findById(id);
     if (!employee) return res.status(404).json({ error: "Employee not found" });
 
+    // Validate email uniqueness across other users before writing any database updates
+    if (email) {
+      const existingUser = await User.findOne({ email: email.toLowerCase(), _id: { $ne: employee.userId } });
+      if (existingUser) {
+        return res.status(400).json({ error: "Email already exists" });
+      }
+    }
+
     await Employee.findByIdAndUpdate(id, {
       firstName, lastName, email, phone, position,
       department: department || "Engineering",
@@ -137,7 +145,7 @@ export const updateEmployee = async (req, res) => {
       bio: bio || "",
     });
 
-    const userUpdate = { email };
+    const userUpdate = { email, firstName, lastName, bio };
     if (role) userUpdate.role = role;
     if (password) userUpdate.password = await bcrypt.hash(password, 10);
     await User.findByIdAndUpdate(employee.userId, userUpdate);

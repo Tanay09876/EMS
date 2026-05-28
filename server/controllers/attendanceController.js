@@ -13,8 +13,8 @@ export const clockInOut = async (req, res) => {
                 error: "Your account is deactivated. You cannot clock in/out.",
             });
 
-         const today = new Date();
-         today.setHours(0, 0, 0, 0);
+         const dateString = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
+         const today = new Date(dateString + "T00:00:00+05:30");
 
          const existing = await Attendance.findOne({
             employeeId: employee._id,
@@ -24,7 +24,9 @@ export const clockInOut = async (req, res) => {
         const now = new Date();
 
         if(!existing){
-            const isLate = now.getHours() >= 9 && now.getMinutes() > 0;
+            const istTimeStr = now.toLocaleTimeString("en-US", { timeZone: "Asia/Kolkata", hour12: false });
+            const [istHour, istMinute] = istTimeStr.split(":").map(Number);
+            const isLate = istHour > 9 || (istHour === 9 && istMinute > 0);
             const attendance = await Attendance.create({
                 employeeId: employee._id,
                 date: today,
