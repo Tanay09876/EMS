@@ -16,6 +16,15 @@ export const createPayslip = async (req, res) => {
         const employee = await Employee.findOne({ _id: employeeId, isDeleted: { $ne: true } });
         if (!employee) return res.status(404).json({ error: "Employee not found" });
 
+        const existingPayslip = await Payslip.findOne({
+            employeeId,
+            month: Number(month),
+            year: Number(year)
+        });
+        if (existingPayslip) {
+            return res.status(400).json({ error: "Payslip for this employee and month/year already exists" });
+        }
+
         const settings = await getOrganizationSettings();
         const leaveBalance = await getLeaveBalance(employee._id, Number(year));
         const annualBalance = leaveBalance.find((leave) => leave.type === "ANNUAL");

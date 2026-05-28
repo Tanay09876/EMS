@@ -14,7 +14,7 @@ export const getOrganizationSettings = async () => {
   const settings = await OrganizationSetting.findOneAndUpdate(
     { key: "default" },
     { $setOnInsert: { key: "default", ...DEFAULT_ORGANIZATION_SETTINGS } },
-    { new: true, upsert: true },
+    { returnDocument: "after", upsert: true },
   ).lean();
 
   return settings;

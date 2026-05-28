@@ -81,11 +81,20 @@ export const updateProfile = async (req, res) => {
         }
 
         if(isAdminProfile){
-            const updatedUser = await User.findByIdAndUpdate(session.userId, update, {new: true})
+            const updatedUser = await User.findByIdAndUpdate(session.userId, update, {returnDocument: "after"})
             return res.json({ success: true, profileImage: updatedUser.profileImage });
         }
 
-        const updatedEmployee = await Employee.findByIdAndUpdate(employee._id, update, {new: true})
+        const updatedEmployee = await Employee.findByIdAndUpdate(employee._id, update, {returnDocument: "after"})
+        
+        // Synchronize changes to User schema for data consistency
+        const userUpdate = {};
+        if (update.bio !== undefined) userUpdate.bio = update.bio;
+        if (update.profileImage !== undefined) userUpdate.profileImage = update.profileImage;
+        if (Object.keys(userUpdate).length > 0) {
+            await User.findByIdAndUpdate(employee.userId, userUpdate);
+        }
+
         return res.json({ success: true, profileImage: updatedEmployee.profileImage });
     } catch (error) {
         console.error(error);

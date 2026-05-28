@@ -141,20 +141,66 @@ export const resetEmployeePasswordWithOtp = async (req, res) => {
     }
 }
 
-export const resetAdminPasswordDirect = async (req, res) => {
+export const requestAdminPasswordOtp = async (req, res) => {
     try {
-        const { email, newPassword } = req.body;
-        if(!email || !newPassword){
-            return res.status(400).json({ error: "Email and new password are required" });
+        const { email } = req.body;
+        if(!email) return res.status(400).json({ error: "Email is required" });
+
+        if (email.toLowerCase() !== process.env.ADMIN_EMAIL?.toLowerCase()) {
+            return res.status(404).json({ error: "Admin account not found" });
+        }
+
+        const user = await User.findOne({email: email.toLowerCase(), role: "ADMIN"});
+        if(!user) return res.status(404).json({ error: "Admin account not found" });
+
+        const otp = String(Math.floor(100000 + Math.random() * 900000));
+        user.resetOtp = await bcrypt.hash(otp, 10);
+        user.resetOtpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
+        await user.save();
+
+        await sendEmail({
+            to: email,
+            subject: "Admin MS password reset OTP",
+            body: resetOtpEmail({otp}),
+        });
+
+        return res.json({ success: true });
+    } catch (error) {
+        console.error("Admin OTP request error:", error);
+        if(error?.code === "EAUTH"){
+            return res.status(500).json({ error: "SMTP authentication failed. Check SMTP_USER and SMTP_PASS in server .env." });
+        }
+        return res.status(500).json({ error: "Failed to send OTP" });
+    }
+}
+
+export const resetAdminPasswordWithOtp = async (req, res) => {
+    try {
+        const { email, otp, newPassword } = req.body;
+        if(!email || !otp || !newPassword){
+            return res.status(400).json({ error: "Email, OTP, and new password are required" });
         }
         if(newPassword.length < 6){
             return res.status(400).json({ error: "Password must be at least 6 characters" });
         }
+        if (email.toLowerCase() !== process.env.ADMIN_EMAIL?.toLowerCase()) {
+            return res.status(400).json({ error: "Invalid request" });
+        }
 
-        const user = await User.findOne({email, role: "ADMIN"});
-        if(!user) return res.status(404).json({ error: "Admin account not found" });
+        const user = await User.findOne({email: email.toLowerCase(), role: "ADMIN"});
+        if(!user || !user.resetOtp || !user.resetOtpExpiresAt){
+            return res.status(400).json({ error: "Please request a new OTP" });
+        }
+        if(user.resetOtpExpiresAt < new Date()){
+            return res.status(400).json({ error: "OTP expired. Please request a new OTP" });
+        }
+
+        const isValidOtp = await bcrypt.compare(otp, user.resetOtp);
+        if(!isValidOtp) return res.status(400).json({ error: "Invalid OTP" });
 
         user.password = await bcrypt.hash(newPassword, 10);
+        user.resetOtp = "";
+        user.resetOtpExpiresAt = undefined;
         await user.save();
 
         return res.json({ success: true });

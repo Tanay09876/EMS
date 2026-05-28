@@ -19,7 +19,10 @@ const ForgotPassword = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            await api.post("/auth/forgot-password/employee/request-otp", {email});
+            const url = isAdmin
+                ? "/auth/forgot-password/admin/request-otp"
+                : "/auth/forgot-password/employee/request-otp";
+            await api.post(url, {email});
             setOtpSent(true);
             toast.success("OTP sent to your email");
         } catch (error) {
@@ -33,11 +36,10 @@ const ForgotPassword = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            if(isAdmin){
-                await api.post("/auth/forgot-password/admin/reset", {email, newPassword});
-            }else{
-                await api.post("/auth/forgot-password/employee/reset", {email, otp, newPassword});
-            }
+            const url = isAdmin
+                ? "/auth/forgot-password/admin/reset"
+                : "/auth/forgot-password/employee/reset";
+            await api.post(url, {email, otp, newPassword});
             toast.success("Password reset successfully");
             navigate(`/login/${role}`);
         } catch (error) {
@@ -59,11 +61,11 @@ const ForgotPassword = () => {
                     <div className="mb-8">
                         <h1 className='text-2xl sm:text-3xl font-medium text-zinc-800'>Reset Password</h1>
                         <p className='text-slate-500 text-sm sm:text-base mt-2'>
-                            {isAdmin ? "Reset your admin password directly." : "Verify your employee email with OTP."}
+                            Verify your {role} email with OTP.
                         </p>
                     </div>
 
-                    {!isAdmin && !otpSent ? (
+                    {!otpSent ? (
                         <form className='space-y-5' onSubmit={requestOtp}>
                             <div>
                                 <label className='block text-sm font-medium text-slate-700 mb-2'>Email address</label>
@@ -78,14 +80,12 @@ const ForgotPassword = () => {
                         <form className='space-y-5' onSubmit={resetPassword}>
                             <div>
                                 <label className='block text-sm font-medium text-slate-700 mb-2'>Email address</label>
-                                <input type="email" value={email} onChange={(e)=> setEmail(e.target.value)} required disabled={!isAdmin && otpSent} className={!isAdmin && otpSent ? "bg-slate-50 text-slate-400 cursor-not-allowed" : ""} />
+                                <input type="email" value={email} onChange={(e)=> setEmail(e.target.value)} required disabled={otpSent} className={otpSent ? "bg-slate-50 text-slate-400 cursor-not-allowed" : ""} />
                             </div>
-                            {!isAdmin && (
-                                <div>
-                                    <label className='block text-sm font-medium text-slate-700 mb-2'>OTP</label>
-                                    <input value={otp} onChange={(e)=> setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))} required minLength={6} maxLength={6} placeholder='123456'/>
-                                </div>
-                            )}
+                            <div>
+                                <label className='block text-sm font-medium text-slate-700 mb-2'>OTP</label>
+                                <input value={otp} onChange={(e)=> setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))} required minLength={6} maxLength={6} placeholder='123456'/>
+                            </div>
                             <div>
                                 <label className='block text-sm font-medium text-slate-700 mb-2'>New Password</label>
                                 <input type="password" value={newPassword} onChange={(e)=> setNewPassword(e.target.value)} required minLength={6} placeholder='Minimum 6 characters'/>
