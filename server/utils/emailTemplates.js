@@ -1,47 +1,3 @@
-// export const formatDate = (date) => new Date(date).toLocaleDateString("en-IN", {
-//     day: "2-digit",
-//     month: "short",
-//     year: "numeric",
-// });
-
-// export const accountCreatedEmail = ({name, email, password, role}) => `
-//     <div style="font-family:Arial,sans-serif;line-height:1.6;color:#1f2937">
-//         <h2>Welcome to Employee MS</h2>
-//         <p>Hello ${name},</p>
-//         <p>Your ${role === "ADMIN" ? "admin" : "employee"} account has been created.</p>
-//         <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin:16px 0">
-//             <p><strong>Login Email:</strong> ${email}</p>
-//             <p><strong>Temporary Password:</strong> ${password}</p>
-//         </div>
-//         <p>Please sign in and change your password from Settings.</p>
-//     </div>
-// `;
-
-// export const resetOtpEmail = ({otp}) => `
-//     <div style="font-family:Arial,sans-serif;line-height:1.6;color:#1f2937">
-//         <h2>Password reset OTP</h2>
-//         <p>Use this OTP to reset your Employee MS password.</p>
-//         <p style="font-size:28px;font-weight:700;letter-spacing:6px">${otp}</p>
-//         <p>This OTP expires in 10 minutes.</p>
-//     </div>
-// `;
-
-// export const leaveDecisionEmail = ({name, status, type, startDate, endDate, totalDays, reason, adminRemark}) => `
-//     <div style="font-family:Arial,sans-serif;line-height:1.6;color:#1f2937">
-//         <h2>Leave ${status === "APPROVED" ? "Approved" : "Rejected"}</h2>
-//         <p>Hello ${name},</p>
-//         <p>Your leave request has been <strong>${status.toLowerCase()}</strong>.</p>
-//         <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin:16px 0">
-//             <p><strong>Type:</strong> ${type}</p>
-//             <p><strong>Date:</strong> ${formatDate(startDate)} to ${formatDate(endDate)}</p>
-//             <p><strong>Total Days:</strong> ${totalDays}</p>
-//             <p><strong>Your Reason:</strong> ${reason}</p>
-//             ${adminRemark ? `<p><strong>Admin Remark:</strong> ${adminRemark}</p>` : ""}
-//         </div>
-//     </div>
-// `;
-
-
 export const formatDate = (date) =>
     new Date(date).toLocaleDateString("en-IN", {
         day: "2-digit",
@@ -49,7 +5,7 @@ export const formatDate = (date) =>
         year: "numeric",
     });
 
-const LOGO_URL = `${process.env.SERVER_URL}/favicon.svg`;
+const LOGO_URL = (process.env.CLIENT_URL || "http://localhost:5173") + "/favicon.svg";
 
 
 // ===============================
