@@ -5,7 +5,7 @@ export const formatDate = (date) =>
         year: "numeric",
     });
 
-const LOGO_URL = (process.env.CLIENT_URL || "http://localhost:5173") + "/favicon.svg";
+const LOGO_URL = "https://raw.githubusercontent.com/Tanay09876/EMS/main/client/public/logo.png";
 
 
 // ===============================
@@ -35,7 +35,7 @@ const emailLayout = (title, content) => `
 
             <!-- Footer -->
             <div style="background:#f8fafc;border-top:1px solid #e2e8f0;padding:20px; text-align:center;font-size:13px; color:#64748b; ">
-                © ${new Date().getFullYear()}EMS <br/>
+                © ${new Date().getFullYear()}  EMS <br/>
                 Secure HR & Employee Management Platform
             </div>
 
@@ -60,11 +60,10 @@ export const accountCreatedEmail = ({
         <p>Hello <strong>${name}</strong>,</p>
 
         <p>
-            Your ${
-                role === "ADMIN"
-                    ? "administrator"
-                    : "employee"
-            } account has been successfully created.
+            Your ${role === "ADMIN"
+            ? "administrator"
+            : "employee"
+        } account has been successfully created.
         </p>
 
         <div style="background:#f8fafc;border:1px solid #e2e8f0; border-radius:12px;padding:20px;margin:24px 0;">
