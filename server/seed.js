@@ -11,27 +11,26 @@ async function registerAdmin() {
             process.exit(1);
         }
         await connectDB()
-        const existingAdmin = await User.findOne({email:process.env.ADMIN_EMAIL});
-        if(existingAdmin){
-            const hashedPassword = await bcrypt.hash(TemporaryPassword, 10);
-            existingAdmin.password = hashedPassword;
-            await existingAdmin.save();
-            console.log("Admin user already exists. Password has been reset to:", TemporaryPassword);
-            process.exit(0);
-        }
-        const hashedPassword = await bcrypt.hash(TemporaryPassword,10)
+        
+        // Remove all existing admin users
+        const deleteResult = await User.deleteMany({ role: "ADMIN" });
+        console.log(`Removed ${deleteResult.deletedCount} existing admin(s).`);
+
+        const hashedPassword = await bcrypt.hash(TemporaryPassword, 10)
         const admin = await User.create({
-            email:process.env.ADMIN_EMAIL,
-            password:hashedPassword,
-            role:"ADMIN",
+            email: process.env.ADMIN_EMAIL,
+            password: hashedPassword,
+            role: "ADMIN",
         })
 
         console.log("Admin user created");
-        console.log("\nemail:",admin.email);
-        console.log("password:",TemporaryPassword);
+        console.log("\nemail:", admin.email);
+        console.log("password:", TemporaryPassword);
         console.log("\nchange the password after login.");
+        process.exit(0);
     }catch(error){
         console.error("Seed failed:", error );
+        process.exit(1);
     }
     
 }

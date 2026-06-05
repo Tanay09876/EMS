@@ -286,8 +286,8 @@ const Productivity = () => {
             {loading && <Loader2Icon className="w-4 h-4 text-slate-400 animate-spin" />}
           </div>
 
-          <form onSubmit={handleAddTask} className="p-5 border-b border-slate-100 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-[minmax(180px,1.2fr)_minmax(160px,1fr)_minmax(112px,0.55fr)_minmax(112px,0.55fr)_minmax(152px,0.7fr)_56px] gap-3">
-            <label>
+          <form onSubmit={handleAddTask} className="p-5 border-b border-slate-100 dark:border-slate-800 grid grid-cols-2 lg:grid-cols-[1.5fr_2fr_1fr_1fr_1.5fr_56px] gap-3">
+            <label className="col-span-2 lg:col-span-1">
               <span className="sr-only">Task title</span>
               <input
                 name="title"
@@ -297,7 +297,7 @@ const Productivity = () => {
                 disabled={data?.employee?.isDeleted}
               />
             </label>
-            <label>
+            <label className="col-span-2 lg:col-span-1">
               <span className="sr-only">Notes</span>
               <input
                 name="description"
@@ -307,7 +307,7 @@ const Productivity = () => {
                 disabled={data?.employee?.isDeleted}
               />
             </label>
-            <label>
+            <label className="col-span-1 lg:col-span-1">
               <span className="sr-only">Estimated hours</span>
               <input
                 type="number"
@@ -320,7 +320,7 @@ const Productivity = () => {
                 aria-label="Estimated hours"
               />
             </label>
-            <label>
+            <label className="col-span-1 lg:col-span-1">
               <span className="sr-only">Actual hours</span>
               <input
                 type="number"
@@ -333,7 +333,7 @@ const Productivity = () => {
                 aria-label="Actual hours"
               />
             </label>
-            <label>
+            <label className="col-span-2 lg:col-span-1">
               <span className="sr-only">Status</span>
               <select
                 name="status"
@@ -351,7 +351,7 @@ const Productivity = () => {
             <button
               type="submit"
               disabled={saving || data?.employee?.isDeleted}
-              className="btn-primary flex items-center justify-center gap-2 sm:col-span-2 2xl:col-span-1 disabled:opacity-60"
+              className="btn-primary flex items-center justify-center gap-2 col-span-2 lg:col-span-1 disabled:opacity-60 w-full"
             >
               {saving ? <Loader2Icon className="w-4 h-4 animate-spin" /> : <PlusIcon className="w-4 h-4" />}
             </button>
