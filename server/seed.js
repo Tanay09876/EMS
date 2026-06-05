@@ -13,7 +13,10 @@ async function registerAdmin() {
         await connectDB()
         const existingAdmin = await User.findOne({email:process.env.ADMIN_EMAIL});
         if(existingAdmin){
-            console.log("User already exists as role", existingAdmin.role)
+            const hashedPassword = await bcrypt.hash(TemporaryPassword, 10);
+            existingAdmin.password = hashedPassword;
+            await existingAdmin.save();
+            console.log("Admin user already exists. Password has been reset to:", TemporaryPassword);
             process.exit(0);
         }
         const hashedPassword = await bcrypt.hash(TemporaryPassword,10)
@@ -32,3 +35,5 @@ async function registerAdmin() {
     }
     
 }
+
+registerAdmin();
